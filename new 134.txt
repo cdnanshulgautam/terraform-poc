@@ -1,0 +1,101 @@
+Automated, consistent infrastructure deployment
+Secure and scalable cloud architecture
+Comprehensive logging and monitoring
+Flexible and modular infrastructure design
+
+
+Brief Speech for Terraform AWS Infrastructure Automation Presentation
+Introduction to Terraform AWS Automation:
+"Good [morning/afternoon], everyone! Today, I'll walk you through automating AWS infrastructure using Terraform. 
+Terraform enables us to define infrastructure as code, ensuring consistency, scalability, and version control.
+I'll explain how each component of the Terraform script contributes to building a robust infrastructure."
+
+Backend Configuration:
+"We begin with the backend configuration. Here, Terraform uses an S3 bucket to store the state file, which tracks resource metadata and configurations.
+DynamoDB is configured for state locking, preventing simultaneous updates that could lead to inconsistencies. 
+This setup ensures a secure and reliable backend for our infrastructure."
+
+AMI Selection:
+"For our EC2 instances, we use the aws_ami data source to select the most recent Ubuntu AMI from Canonical. 
+This ensures that the instances are up-to-date with the latest features and security patches. 
+Filters are applied for virtualization type and image name to refine the selection."
+
+Networking - VPC and Subnets:
+"Next, we define the network layer. A VPC is created with a CIDR block of 10.0.0.0/16. 
+We set up a public subnet for internet-facing resources and a private subnet for internal services. 
+The public subnet is associated with a route table that directs traffic through an internet gateway, enabling external connectivity."
+
+Security Groups:
+"Security groups are essential for controlling traffic to and from our resources. 
+In this setup, we allow SSH ingress on port 22 from any IP address for management purposes. 
+Outbound traffic is unrestricted to ensure communication with other AWS services."
+
+EC2 Instance:
+"An EC2 instance is launched in the public subnet, using the Ubuntu AMI we selected earlier. 
+The instance is attached to a security group and a root block device. 
+Additionally, an external EBS volume is provisioned for extra storage and attached to the instance. 
+User data is used to install necessary packages and configure the system during startup."
+
+Logging and Artifact Storage:
+"We integrate CloudWatch and S3 for monitoring and artifact storage. CloudWatch captures logs such as instance creation events, which are retained for 90 days. 
+An S3 bucket is used to store artifacts, providing a centralized location for historical data and event tracking."
+
+IAM Roles and Policies:
+"IAM roles grant our EC2 instances access to CloudWatch and S3 without requiring hardcoded credentials. 
+The role has a policy attached, allowing actions like writing logs to CloudWatch and uploading objects to S3. 
+This ensures secure and principle-of-least-privilege access."
+
+DynamoDB Table:
+"We define a DynamoDB table named products for data storage. Attributes like id, barcode, and name are configured. 
+A Global Secondary Index is added to support optimized queries. The table also serves as a state-locking mechanism for Terraform operations."
+
+CI/CD Pipeline with GitHub Actions:
+"Finally, we automate deployment using a CI/CD pipeline. GitHub Actions runs Terraform commands like init, plan, and apply whenever code is pushed to the 
+main branch. AWS credentials are securely configured, and infrastructure changes are applied automatically, streamlining the deployment process."
+
+Conclusion:
+"In summary, this Terraform script provides a comprehensive and automated approach to managing AWS infrastructure. From backend configuration to networking, 
+security, and CI/CD integration, every step ensures efficiency, security, and scalability. Thank you, and I’m happy to answer any questions!"
+
+
+I'll provide 5 specific examples of how the infrastructure components interact:
+
+SSH Access and Network Connection
+
+CopyExample: Developer connects to EC2 instance
+- Internet Gateway allows external access
+- Public Subnet hosts the EC2 instance
+- Security Group permits SSH (port 22)
+- User can remotely access the Ubuntu server
+
+Logging Workflow
+
+CopyExample: System generates application logs
+- EC2 instance writes logs to CloudWatch
+- IAM Role (CloudWatch/S3 Access) permits logging
+- Logs stored in "/aws/ec2/audit_trail" log group
+- Log retention set to 90 days
+
+Artifact Storage Process
+
+CopyExample: Deployment artifacts need preservation
+- EC2 instance generates build artifacts
+- IAM Role provides S3 write permissions
+- Artifacts written to "artifact-history-bucket"
+- Random suffix ensures unique bucket name
+
+DynamoDB Product Management
+
+CopyExample: E-commerce product catalog management
+- EC2 instance has full DynamoDB access
+- Products table with composite key (id + barcode)
+- Global secondary index on product name/description
+- Supports complex product lookup strategies
+
+Volume Management
+
+CopyExample: Additional storage requirements
+- External EBS volume attached to EC2
+- Volume size dynamically calculated
+- Mounted as "/dev/xvdh"
+- Allows flexible storage expansion
